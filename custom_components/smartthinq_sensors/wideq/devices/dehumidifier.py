@@ -327,17 +327,14 @@ class DeHumidifierStatus(DeviceStatus):
         except:
             key = None
             _LOGGER.exception("LGE ThinQ dehumidifier - unable to get Notification Light status")
-        ntf_real_value = self.lookup_range(key)
-        ntf_light_int_value = self.to_int_or_none(ntf_real_value)
-        ntf_light_bool_value = self.lookup_enum_bool(ntf_real_value)
-        if (ntf_light_int_value == None and ntf_light_bool_value == None):
-            ntf_light_value = None
-        elif (ntf_light_int_value is not None and ntf_light_int_value > 0) or ntf_light_bool_value == True:
-            ntf_light_value = True
+        if key is None:
+            ntf_real_value = None
+            ntf_light_int_value = None
         else:
-            ntf_light_value = False
-        _LOGGER.warning(f"LGE ThinQ dehumidifier Notification light is {ntf_real_value}. int {ntf_light_int_value}, bool {ntf_light_bool_value}, final {ntf_light_value}")
-        return self._update_feature(DehumidifierFeatures.NOTIFICATION_LIGHT, ntf_light_value)
+            ntf_real_value = self.lookup_range(key)
+            ntf_light_int_value = self.to_int_or_none(ntf_real_value)
+            _LOGGER.warning(f"LGE ThinQ dehumidifier Notification light is {ntf_real_value}. int {ntf_light_int_value}")
+        return self._update_feature(DehumidifierFeatures.NOTIFICATION_LIGHT, ntf_light_int_value)
 
     def _update_features(self):
         _ = [
