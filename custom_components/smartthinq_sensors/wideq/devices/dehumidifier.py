@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from enum import Enum
 
 from ..backports.functools import cached_property
@@ -27,7 +29,8 @@ STATE_CURRENT_HUM = ["SensorHumidity", "airState.humidity.current"]
 STATE_PM1 = ["SensorPM1", "airState.quality.PM1"]
 STATE_PM10 = ["SensorPM10", "airState.quality.PM10"]
 STATE_PM25 = ["SensorPM2", "airState.quality.PM2"]
-STATE_TANK_LIGHT = ["WatertankLight", "airState.notificationExt"]
+STATE_TANK_LIGHT = ["WatertankLight", "airState.miscFuncState.watertankLight"]
+STATE_NOTIFICATION_LIGHT = ["NotificationLight", "airState.notificationExt"]
 
 STATE_POWER = [STATE_POWER_V1, "airState.energy.onCurrent"]
 
@@ -43,6 +46,8 @@ DEFAULT_MAX_HUM = 70
 DEFAULT_STEP_HUM = 5
 
 ADD_FEAT_POLL_INTERVAL = 300  # 5 minutes
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class DHumOp(Enum):
@@ -310,14 +315,36 @@ class DeHumidifierStatus(DeviceStatus):
     def water_tank_full(self):
         """Return water tank full status."""
         key = self._get_state_key(STATE_TANK_LIGHT)
-        if (value := self.to_int_or_none(key)) is None:
+        if (value := self.lookup_enum_bool(key)) is None:
             return None
-        water_tank_full_value = value > 0
-        return self._update_feature(DehumidifierFeatures.WATER_TANK_FULL, water_tank_full_value)
+        return self._update_feature(DehumidifierFeatures.WATER_TANK_FULL, value)
+
+    @property
+    def notification_light(self):
+        """Return notification light status."""
+        try:
+            key = self._get_state_key(STATE_NOTIFICATION_LIGHT)
+        except:
+            key = None
+            _LOGGER.exception("LGE ThinQ dehumidifier - unable to get Notification Light status")
+        ntf_light_int_value = self.to_int_or_none(key)
+        ntf_light_bool_value = self.lookup_enum_bool(key)
+        if (ntf_light_int_value == None and ntf_light_bool_value == None):
+            ntf_light_value = None
+        elif (ntf_light_int_value is not None and ntf_light_int_value > 0) or ntf_light_bool_value == True:
+            ntf_light_value = True
+        else:
+            ntf_light_value = False
+        if (ntf_light_value == None):
+            _LOGGER.warning(f"LGE ThinQ dehumidifier Notification light is {key}. int {ntf_light_int_value}, bool {ntf_light_bool_value}, final {ntf_light_value}")
+        else:
+            _LOGGER.debug(f"LGE ThinQ dehumidifier Notification light is {key}. int {ntf_light_int_value}, bool {ntf_light_bool_value}, final {ntf_light_value}")
+        return self._update_feature(DehumidifierFeatures.NOTIFICATION_LIGHT, ntf_light_value)
 
     def _update_features(self):
         _ = [
             self.current_humidity,
             self.target_humidity,
             self.water_tank_full,
+            self.notification_light
         ]
