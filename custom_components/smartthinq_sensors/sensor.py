@@ -494,6 +494,11 @@ DEHUMIDIFIER_SENSORS: tuple[ThinQSensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         entity_registry_enabled_default=False,
     ),
+    ThinQSensorEntityDescription(
+        key=DehumidifierFeatures.NOTIFICATION_LIGHT,
+        name="Notification Light",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
 )
 WATER_HEATER_SENSORS: tuple[ThinQSensorEntityDescription, ...] = (
     ThinQSensorEntityDescription(

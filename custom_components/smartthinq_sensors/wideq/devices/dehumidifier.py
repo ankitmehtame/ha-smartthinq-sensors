@@ -320,7 +320,7 @@ class DeHumidifierStatus(DeviceStatus):
         return self._update_feature(DehumidifierFeatures.WATER_TANK_FULL, value)
 
     @property
-    def notification_light(self):
+    def notification_light(self) -> int | None:
         """Return notification light status."""
         try:
             key = self._get_state_key(STATE_NOTIFICATION_LIGHT)
