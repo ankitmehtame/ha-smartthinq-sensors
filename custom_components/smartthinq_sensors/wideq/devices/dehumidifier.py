@@ -336,10 +336,7 @@ class DeHumidifierStatus(DeviceStatus):
             ntf_light_value = True
         else:
             ntf_light_value = False
-        if (ntf_light_value == None):
-            _LOGGER.warning(f"LGE ThinQ dehumidifier Notification light is {ntf_real_value}. int {ntf_light_int_value}, bool {ntf_light_bool_value}, final {ntf_light_value}")
-        else:
-            _LOGGER.info(f"LGE ThinQ dehumidifier Notification light is {ntf_real_value}. int {ntf_light_int_value}, bool {ntf_light_bool_value}, final {ntf_light_value}")
+        _LOGGER.warning(f"LGE ThinQ dehumidifier Notification light is {ntf_real_value}. int {ntf_light_int_value}, bool {ntf_light_bool_value}, final {ntf_light_value}")
         return self._update_feature(DehumidifierFeatures.NOTIFICATION_LIGHT, ntf_light_value)
 
     def _update_features(self):
