@@ -310,9 +310,10 @@ class DeHumidifierStatus(DeviceStatus):
     def water_tank_full(self):
         """Return water tank full status."""
         key = self._get_state_key(STATE_TANK_LIGHT)
-        if (value := self.lookup_enum_bool(key)) is None:
+        if (value := self.to_int_or_none(key)) is None:
             return None
-        return self._update_feature(DehumidifierFeatures.WATER_TANK_FULL, value)
+        water_tank_full_value = value > 0
+        return self._update_feature(DehumidifierFeatures.WATER_TANK_FULL, water_tank_full_value)
 
     def _update_features(self):
         _ = [
