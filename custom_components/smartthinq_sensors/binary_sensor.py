@@ -201,6 +201,8 @@ DEHUMIDIFIER_BINARY_SENSORS: tuple[ThinQBinarySensorEntityDescription, ...] = (
     ThinQBinarySensorEntityDescription(
         key=DehumidifierFeatures.NOTIFICATION_LIGHT,
         name="Notification Light",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        value_fn=lambda x: x.notification_light,
     ),
 )
 
