@@ -320,7 +320,7 @@ class DeHumidifierStatus(DeviceStatus):
         return self._update_feature(DehumidifierFeatures.WATER_TANK_FULL, value)
 
     @property
-    def notification_light(self) -> int | None:
+    def notification_light(self) -> bool | None:
         """Return notification light status."""
         try:
             key = self._get_state_key(STATE_NOTIFICATION_LIGHT)
@@ -330,11 +330,18 @@ class DeHumidifierStatus(DeviceStatus):
         if key is None:
             ntf_real_value = None
             ntf_light_int_value = None
+            ntf_light_bool_val = None
         else:
             ntf_real_value = self.lookup_range(key)
             ntf_light_int_value = self.to_int_or_none(ntf_real_value)
-            _LOGGER.warning(f"LGE ThinQ dehumidifier Notification light is {ntf_real_value}. int {ntf_light_int_value}")
-        return self._update_feature(DehumidifierFeatures.NOTIFICATION_LIGHT, ntf_light_int_value)
+            if ntf_light_int_value is None:
+                ntf_light_bool_val = None
+            elif ntf_light_int_value > 0:
+                ntf_light_bool_val = True
+            else:
+                ntf_light_bool_val = False
+            _LOGGER.warning(f"LGE ThinQ dehumidifier Notification light is {ntf_real_value}. int {ntf_light_int_value}. bool {ntf_light_bool_val}")
+        return self._update_feature(DehumidifierFeatures.NOTIFICATION_LIGHT, ntf_light_bool_val)
 
     def _update_features(self):
         _ = [
