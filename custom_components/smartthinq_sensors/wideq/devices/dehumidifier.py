@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import logging
-
 from enum import Enum
 
 from ..backports.functools import cached_property
@@ -46,8 +44,6 @@ DEFAULT_MAX_HUM = 70
 DEFAULT_STEP_HUM = 5
 
 ADD_FEAT_POLL_INTERVAL = 300  # 5 minutes
-
-_LOGGER = logging.getLogger(__name__)
 
 
 class DHumOp(Enum):
@@ -326,7 +322,6 @@ class DeHumidifierStatus(DeviceStatus):
             key = self._get_state_key(STATE_NOTIFICATION_LIGHT)
         except KeyError:
             key = None
-            _LOGGER.exception("LGE ThinQ dehumidifier - unable to get Notification Light status")
         if key is None:
             ntf_real_value = None
             ntf_light_int_value = None
